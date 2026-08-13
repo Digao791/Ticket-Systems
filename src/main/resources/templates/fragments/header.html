@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<header class="top-menu"
+        th:fragment="mainHeader(activePage, project)">
+
+    <div class="menu-content">
+
+        <a class="logo"
+           th:href="@{/}">
+            Ticket System
+        </a>
+
+        <nav class="navigation">
+
+            <a th:href="@{/}"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                Home
+            </a>
+
+            <a th:if="${project != null}"
+               th:href="@{/projects/{projectId}/tickets(
+                    projectId=${project.id}
+               )}"
+               th:classappend="${activePage == 'tickets'} ? 'active'">
+                Tickets
+            </a>
+
+            <div class="user-menu">
+
+                <span class="current-user"
+                      th:text="${currentUser.name}">
+                    Usuário
+                </span>
+
+                <form class="logout-form"
+                      th:action="@{/logout}"
+                      method="post">
+
+                    <button class="logout-button"
+                            type="submit">
+                        Sair
+                    </button>
+
+                </form>
+
+            </div>
+
+        </nav>
+
+    </div>
+
+</header>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Projetos - Ticket System</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/home.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: mainHeader('home', null)}">
+</div>
+
+
+<main class="page-container">
+
+    <section class="page-header">
+
+        <div>
+
+            <p class="page-label">
+                Workspace
+            </p>
+
+            <h1>
+                Projetos
+            </h1>
+
+            <p class="page-description">
+                Acesse os projetos dos quais você participa.
+            </p>
+
+        </div>
+
+
+        <a class="new-project-button"
+           th:if="${isAdmin}"
+           th:href="@{/projects/new}">
+            Novo projeto
+        </a>
+
+    </section>
+
+
+    <section class="empty-projects"
+             th:if="${projects.isEmpty()}">
+
+        <h2>
+            Nenhum projeto disponível
+        </h2>
+
+        <p>
+            Você ainda não participa de nenhum projeto.
+        </p>
+
+    </section>
+
+
+    <section class="project-grid"
+             th:unless="${projects.isEmpty()}">
+
+        <article class="project-card"
+                 th:each="project : ${projects}">
+
+            <div class="project-card-header">
+
+                <span class="project-id"
+                      th:text="${'Projeto #' + project.id()}">
+                    Projeto #1
+                </span>
+
+                <h2 th:text="${project.name()}">
+                    Projeto Geral
+                </h2>
+
+            </div>
+
+
+            <div class="project-stats">
+
+                <div class="stat">
+
+                    <span class="stat-value"
+                          th:text="${project.openTickets()}">
+                        12
+                    </span>
+
+                    <span class="stat-label">
+                        Tickets ativos
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span class="stat-value"
+                          th:text="${project.myTickets()}">
+                        4
+                    </span>
+
+                    <span class="stat-label">
+                        Meus tickets
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="project-last-activity">
+
+                <span class="last-activity-label">
+                    Última atividade
+                </span>
+
+                <span th:if="${project.lastActivity() != null}"
+                      th:text="${#temporals.format(
+                          project.lastActivity(),
+                          'dd/MM/yyyy HH:mm'
+                      )}">
+                    12/08/2026 10:30
+                </span>
+
+                <span class="no-activity"
+                      th:if="${project.lastActivity() == null}">
+                    Nenhuma atividade registrada
+                </span>
+
+            </div>
+
+
+            <a class="project-access-button"
+               th:href="@{/projects/{projectId}/tickets(
+                    projectId=${project.id()}
+               )}">
+                Acessar projeto
+            </a>
+
+        </article>
+
+    </section>
+
+</main>
+
+</body>
+</html>

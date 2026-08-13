@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Novo Ticket</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/ticket-form.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: mainHeader('tickets', ${project})}">
+</div>
+
+
+<main class="page-container">
+
+    <a class="back-link"
+       th:href="@{/projects/{projectId}/tickets(
+            projectId=${project.id}
+       )}">
+        ← Voltar para tickets
+    </a>
+
+
+    <section class="page-header">
+
+        <p class="page-label">
+            Projeto
+        </p>
+
+        <h1>
+            Novo Ticket
+        </h1>
+
+        <p class="page-description">
+            Criando ticket em
+            <strong th:text="${project.name}">
+                Projeto Geral
+            </strong>.
+        </p>
+
+    </section>
+
+
+    <section class="ticket-form-card">
+
+        <form th:action="@{/projects/{projectId}/tickets(
+                    projectId=${project.id}
+              )}"
+              th:object="${ticket}"
+              method="post">
+
+            <div class="form-grid">
+
+                <div class="form-field form-field-full">
+
+                    <label for="name">
+                        Nome do ticket
+                    </label>
+
+                    <input id="name"
+                           type="text"
+                           th:field="*{name}"
+                           placeholder="Ex.: Erro ao acessar o sistema">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('name')}"
+                       th:errors="*{name}">
+                        Erro no nome
+                    </p>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="owner">
+                        Owner
+                    </label>
+
+                    <select id="owner"
+                            th:field="*{ownerId}">
+
+                        <option value="">
+                            Selecione um responsável
+                        </option>
+
+                        <option th:each="ownerOption : ${owners}"
+                                th:value="${ownerOption.id}"
+                                th:text="${ownerOption.name}">
+                            Administrador
+                        </option>
+
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('ownerId')}"
+                       th:errors="*{ownerId}">
+                        Erro no owner
+                    </p>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="criticality">
+                        Criticalidade
+                    </label>
+
+                    <select id="criticality"
+                            th:field="*{criticality}">
+
+                        <option value="">
+                            Selecione uma opção
+                        </option>
+
+                        <option th:each="criticalityOption : ${criticalities}"
+                                th:value="${criticalityOption}"
+                                th:text="${criticalityOption.getLabel()}">
+                            Alta
+                        </option>
+
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('criticality')}"
+                       th:errors="*{criticality}">
+                        Erro na criticalidade
+                    </p>
+
+                </div>
+
+
+                <div class="form-field form-field-full">
+
+                    <label for="description">
+                        Descrição
+                    </label>
+
+                    <textarea id="description"
+                              th:field="*{description}"
+                              rows="7"
+                              placeholder="Descreva o problema ou solicitação..."></textarea>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('description')}"
+                       th:errors="*{description}">
+                        Erro na descrição
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a class="cancel-button"
+                   th:href="@{/projects/{projectId}/tickets(
+                        projectId=${project.id}
+                   )}">
+                    Cancelar
+                </a>
+
+                <button class="submit-button"
+                        type="submit">
+                    Criar Ticket
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+</body>
+</html>

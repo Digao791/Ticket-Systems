@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html
+    lang="pt-BR"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket não encontrado</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/tickets.css}">
+</head>
+
+<body>
+
+<main class="form-page-container">
+
+    <section class="ticket-form-panel">
+
+        <h1>Ticket não encontrado</h1>
+
+        <p th:text="${message}">
+            O ticket solicitado não existe.
+        </p>
+
+        <a
+            class="new-ticket-button"
+            th:href="@{/tickets}">
+            Voltar para tickets
+        </a>
+
+    </section>
+
+</main>
+
+</body>
+</html>

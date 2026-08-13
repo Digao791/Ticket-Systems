@@ -1,0 +1,192 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #1e293b;
+    background: #f1f5f9;
+}
+
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 36px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(15, 23, 42, 0.08);
+}
+
+.login-header {
+    margin-bottom: 28px;
+}
+
+.system-name {
+    margin: 0 0 8px;
+
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.login-header h1 {
+    margin: 0 0 8px;
+
+    font-size: 28px;
+}
+
+.login-header p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-field input {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    color: #1e293b;
+    background: #ffffff;
+
+    font: inherit;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    outline: none;
+}
+
+.form-field input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.15);
+}
+
+.login-button {
+    width: 100%;
+
+    padding: 13px;
+
+    color: #ffffff;
+    background: #2563eb;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #1d4ed8;
+}
+
+.alert {
+    margin-bottom: 20px;
+
+    padding: 12px 14px;
+
+    font-size: 14px;
+
+    border-radius: 8px;
+}
+
+.alert-error {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.alert-success {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-left: 10px;
+    padding-left: 18px;
+
+    border-left: 1px solid #334155;
+}
+
+.current-user {
+    color: #e2e8f0;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-button {
+    padding: 8px 12px;
+
+    color: #cbd5e1;
+    background: transparent;
+
+    font: inherit;
+    font-size: 14px;
+
+    border: 1px solid #475569;
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    color: #ffffff;
+    background: #334155;
+}

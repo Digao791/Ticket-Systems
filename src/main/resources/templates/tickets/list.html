@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${project.name + ' - Tickets'}">
+        Tickets
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/tickets.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: mainHeader('tickets', ${project})}">
+</div>
+
+
+<main class="page-container">
+
+    <section class="page-header">
+
+        <div>
+
+            <p class="page-label">
+                Projeto
+            </p>
+
+            <h1 th:text="${project.name}">
+                Projeto Geral
+            </h1>
+
+            <p class="page-description">
+                Visualize e acompanhe os tickets deste projeto.
+            </p>
+
+        </div>
+
+
+        <a class="new-ticket-button"
+           th:href="@{/projects/{projectId}/tickets/new(
+                projectId=${project.id}
+           )}">
+            Novo ticket
+        </a>
+
+    </section>
+
+
+    <section class="ticket-panel">
+
+        <div class="ticket-table-header">
+
+            <span>ID</span>
+            <span>Nome do ticket</span>
+            <span>Owner</span>
+            <span>Data</span>
+            <span>Criticalidade</span>
+            <span>Status</span>
+
+        </div>
+
+
+        <div class="empty-tickets"
+             th:if="${tickets.isEmpty()}">
+
+            <p>
+                Nenhum ticket encontrado neste projeto.
+            </p>
+
+            <a th:href="@{/projects/{projectId}/tickets/new(
+                    projectId=${project.id}
+               )}">
+                Criar primeiro ticket
+            </a>
+
+        </div>
+
+
+        <div class="ticket-list"
+             th:unless="${tickets.isEmpty()}">
+
+            <article class="ticket-row"
+                     th:each="ticket : ${tickets}">
+
+                <a class="ticket-id"
+                   th:href="@{/projects/{projectId}/tickets/{ticketId}(
+                        projectId=${project.id},
+                        ticketId=${ticket.id()}
+                   )}"
+                   th:text="${'#' + ticket.id()}">
+                    #1001
+                </a>
+
+
+                <a class="ticket-name-link"
+                   th:href="@{/projects/{projectId}/tickets/{ticketId}(
+                        projectId=${project.id},
+                        ticketId=${ticket.id()}
+                   )}"
+                   th:text="${ticket.name()}">
+                    Erro ao acessar o sistema
+                </a>
+
+
+                <span class="ticket-owner"
+                      th:text="${ticket.owner()}">
+                    Rodrigo
+                </span>
+
+
+                <span class="ticket-date"
+                      th:text="${#temporals.format(
+                          ticket.date(),
+                          'dd/MM/yyyy'
+                      )}">
+                    12/08/2026
+                </span>
+
+
+                <span>
+
+                    <span class="criticality"
+                          th:classappend="${'criticality-' + ticket.criticalityCssClass()}"
+                          th:text="${ticket.criticality()}">
+                        Alta
+                    </span>
+
+                </span>
+
+
+                <span>
+
+                    <span class="ticket-status"
+                          th:classappend="${'status-' + ticket.statusCssClass()}"
+                          th:text="${ticket.status()}">
+                        Aberto
+                    </span>
+
+                </span>
+
+            </article>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

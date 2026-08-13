@@ -1,0 +1,507 @@
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    color: #1e293b;
+    background: #f1f5f9;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* =========================================================
+   MENU SUPERIOR
+   ========================================================= */
+
+.top-menu {
+    background: #0f172a;
+
+    border-bottom: 1px solid #1e293b;
+}
+
+.menu-content {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 0 24px;
+
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.navigation > a {
+    padding: 8px 10px;
+
+    color: #cbd5e1;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    border-radius: 7px;
+}
+
+.navigation > a:hover {
+    color: #ffffff;
+    background: #1e293b;
+}
+
+.navigation > a.active {
+    color: #ffffff;
+    background: #2563eb;
+}
+
+
+/* =========================================================
+   USUÁRIO
+   ========================================================= */
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-left: 4px;
+    padding-left: 20px;
+
+    border-left: 1px solid #334155;
+}
+
+.current-user {
+    color: #e2e8f0;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-button {
+    padding: 7px 12px;
+
+    color: #cbd5e1;
+    background: transparent;
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    border: 1px solid #475569;
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.logout-button:hover {
+    color: #ffffff;
+    background: #334155;
+
+    border-color: #64748b;
+}
+
+
+/* =========================================================
+   CONTAINER PRINCIPAL
+   ========================================================= */
+
+.page-container {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 40px 24px 64px;
+}
+
+
+/* =========================================================
+   CABEÇALHO DA PÁGINA
+   ========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 26px;
+}
+
+.page-label {
+    margin: 0 0 6px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.page-header h1 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 30px;
+    line-height: 1.2;
+}
+
+.page-description {
+    margin: 8px 0 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.new-ticket-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 11px 17px;
+
+    color: #ffffff;
+    background: #2563eb;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.new-ticket-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   PAINEL DE TICKETS
+   ========================================================= */
+
+.ticket-panel {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   GRID DA TABELA
+   ========================================================= */
+
+.ticket-table-header,
+.ticket-row {
+    display: grid;
+
+    grid-template-columns:
+        90px
+        minmax(250px, 2fr)
+        minmax(130px, 1fr)
+        130px
+        140px
+        140px;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+.ticket-table-header {
+    padding: 14px 20px;
+
+    color: #64748b;
+    background: #f8fafc;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ticket-row {
+    min-height: 70px;
+
+    padding: 14px 20px;
+
+    border-bottom: 1px solid #edf2f7;
+
+    transition:
+        background 0.15s ease;
+}
+
+.ticket-row:last-child {
+    border-bottom: none;
+}
+
+.ticket-row:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   CAMPOS DA LINHA
+   ========================================================= */
+
+.ticket-id {
+    color: #2563eb;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.ticket-id:hover {
+    text-decoration: underline;
+}
+
+.ticket-name-link {
+    color: #0f172a;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.ticket-name-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.ticket-owner,
+.ticket-date {
+    color: #475569;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   CRITICALIDADE
+   ========================================================= */
+
+.criticality {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 82px;
+
+    padding: 6px 10px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    border-radius: 999px;
+}
+
+.criticality-low {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.criticality-medium {
+    color: #854d0e;
+    background: #fef9c3;
+}
+
+.criticality-high {
+    color: #9a3412;
+    background: #ffedd5;
+}
+
+.criticality-critical {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.ticket-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 95px;
+
+    padding: 6px 10px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    border-radius: 999px;
+}
+
+.status-open {
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+.status-in-progress {
+    color: #854d0e;
+    background: #fef3c7;
+}
+
+.status-resolved {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.status-closed {
+    color: #475569;
+    background: #e2e8f0;
+}
+
+
+/* =========================================================
+   LISTA VAZIA
+   ========================================================= */
+
+.empty-tickets {
+    padding: 46px 24px;
+
+    text-align: center;
+}
+
+.empty-tickets p {
+    margin: 0 0 14px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.empty-tickets a {
+    display: inline-block;
+
+    color: #2563eb;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.empty-tickets a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .ticket-panel {
+        overflow-x: auto;
+    }
+
+    .ticket-table-header,
+    .ticket-row {
+        min-width: 900px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .menu-content {
+        padding: 0 16px;
+    }
+
+    .navigation {
+        gap: 12px;
+    }
+
+    .user-menu {
+        gap: 8px;
+
+        padding-left: 12px;
+    }
+
+    .current-user {
+        display: none;
+    }
+
+    .page-container {
+        padding:
+            30px
+            16px
+            48px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .new-ticket-button {
+        width: 100%;
+    }
+
+}

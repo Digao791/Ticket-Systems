@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${'Ticket #' + ticket.id()}">
+        Detalhes do Ticket
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/ticket-details.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: mainHeader('tickets', ${project})}">
+</div>
+
+
+<main class="page-container">
+
+    <a class="back-link"
+       th:href="@{/projects/{projectId}/tickets(
+            projectId=${project.id}
+       )}">
+        ← Voltar para tickets
+    </a>
+
+
+    <section class="ticket-header">
+
+        <div>
+
+            <p class="ticket-number"
+               th:text="${'Ticket #' + ticket.id()}">
+                Ticket #1001
+            </p>
+
+            <h1 th:text="${ticket.name()}">
+                Erro ao acessar o sistema
+            </h1>
+
+        </div>
+
+
+        <div class="ticket-header-badges">
+
+            <span class="criticality"
+                  th:classappend="${'criticality-' + ticket.criticalityCssClass()}"
+                  th:text="${ticket.criticality()}">
+                Alta
+            </span>
+
+            <span class="ticket-status"
+                  th:classappend="${'status-' + ticket.statusCssClass()}"
+                  th:text="${ticket.status().getLabel()}">
+                Aberto
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <section class="ticket-details-card">
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Projeto
+                </span>
+
+                <strong th:text="${project.name}">
+                    Projeto Geral
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    ID do Ticket
+                </span>
+
+                <strong th:text="${'#' + ticket.id()}">
+                    #1001
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Owner
+                </span>
+
+                <strong th:text="${ticket.owner()}">
+                    Rodrigo
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Data de criação
+                </span>
+
+                <strong th:text="${#temporals.format(
+                    ticket.date(),
+                    'dd/MM/yyyy'
+                )}">
+                    12/08/2026
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Criticalidade
+                </span>
+
+                <strong th:text="${ticket.criticality()}">
+                    Alta
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Status
+                </span>
+
+                <strong th:text="${ticket.status().getLabel()}">
+                    Aberto
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="ticket-description">
+
+            <span class="detail-label">
+                Descrição
+            </span>
+
+            <p th:text="${ticket.description()}">
+                Descrição do ticket.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section class="timeline-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <p class="section-label">
+                    Histórico
+                </p>
+
+                <h2>
+                    Atividades
+                </h2>
+
+            </div>
+
+
+            <span class="activity-count"
+                  th:text="${activities.size() + ' atividades'}">
+                0 atividades
+            </span>
+
+        </div>
+
+
+        <div class="empty-activities"
+             th:if="${activities.isEmpty()}">
+            Nenhuma atividade registrada.
+        </div>
+
+
+        <div class="timeline"
+             th:unless="${activities.isEmpty()}">
+
+            <article class="activity-card"
+                     th:each="activity : ${activities}">
+
+                <div class="activity-header">
+
+                    <div class="author-avatar"
+                         th:text="${#strings.substring(
+                            activity.author(),
+                            0,
+                            1
+                         )}">
+                        A
+                    </div>
+
+
+                    <div class="activity-author-info">
+
+                        <strong th:text="${activity.author()}">
+                            Administrador
+                        </strong>
+
+                        <span th:text="${#temporals.format(
+                            activity.createdAt(),
+                            'dd/MM/yyyy HH:mm'
+                        )}">
+                            12/08/2026 11:30
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <p class="activity-comment"
+                   th:if="${activity.comment() != null
+                           and !activity.comment().isBlank()}"
+                   th:text="${activity.comment()}">
+                    Problema analisado.
+                </p>
+
+
+                <div class="activity-changes"
+                     th:if="${activity.statusChanged()
+                             or activity.ownerChanged()}">
+
+                    <div class="activity-change"
+                         th:if="${activity.statusChanged()}">
+
+                        <span class="change-label">
+                            Status
+                        </span>
+
+                        <strong th:text="${activity.oldStatus()}">
+                            Aberto
+                        </strong>
+
+                        <span class="change-arrow">
+                            →
+                        </span>
+
+                        <strong th:text="${activity.newStatus()}">
+                            Resolvido
+                        </strong>
+
+                    </div>
+
+
+                    <div class="activity-change"
+                         th:if="${activity.ownerChanged()}">
+
+                        <span class="change-label">
+                            Owner
+                        </span>
+
+                        <strong th:text="${activity.oldOwner()}">
+                            Administrador
+                        </strong>
+
+                        <span class="change-arrow">
+                            →
+                        </span>
+
+                        <strong th:text="${activity.newOwner()}">
+                            Rodrigo
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <section class="activity-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <p class="section-label">
+                    Atendimento
+                </p>
+
+                <h2>
+                    Adicionar atualização
+                </h2>
+
+            </div>
+
+
+            <span class="acting-as">
+
+                Atualizando como
+
+                <strong th:text="${currentUser.name}">
+                    Administrador
+                </strong>
+
+            </span>
+
+        </div>
+
+
+        <form id="activityForm"
+              class="activity-form"
+              th:action="@{/projects/{projectId}/tickets/{ticketId}/activities(
+                    projectId=${project.id},
+                    ticketId=${ticket.id()}
+              )}"
+              th:object="${newActivity}"
+              method="post">
+
+            <div class="form-alert"
+                 th:if="${activityError != null}"
+                 th:text="${activityError}">
+                Nenhuma alteração foi realizada.
+            </div>
+
+
+            <div id="activityClientError"
+                 class="form-alert"
+                 style="display: none;">
+                Nenhuma alteração foi realizada.
+            </div>
+
+
+            <div class="activity-form-grid">
+
+                <div class="form-field">
+
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select id="status"
+                            th:field="*{status}">
+
+                        <option th:each="statusOption : ${statuses}"
+                                th:value="${statusOption}"
+                                th:text="${statusOption.getLabel()}">
+                            Aberto
+                        </option>
+
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('status')}"
+                       th:errors="*{status}">
+                        Erro no status
+                    </p>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="owner">
+                        Owner
+                    </label>
+
+                    <select id="owner"
+                            th:field="*{ownerId}">
+
+                        <option th:each="ownerOption : ${owners}"
+                                th:value="${ownerOption.id}"
+                                th:text="${ownerOption.name}">
+                            Administrador
+                        </option>
+
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('ownerId')}"
+                       th:errors="*{ownerId}">
+                        Erro no owner
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-field comment-field">
+
+                <div class="field-label-row">
+
+                    <label for="comment">
+                        Comentário
+                    </label>
+
+                    <span class="optional-label">
+                        Opcional
+                    </span>
+
+                </div>
+
+                <textarea id="comment"
+                          th:field="*{comment}"
+                          rows="5"
+                          placeholder="Adicione um comentário sobre esta atualização..."></textarea>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('comment')}"
+                   th:errors="*{comment}">
+                    Erro no comentário
+                </p>
+
+            </div>
+
+
+            <div class="activity-form-actions">
+
+                <button class="submit-button"
+                        type="submit">
+                    Enviar atualização
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    const activityForm =
+        document.getElementById("activityForm");
+
+    const statusField =
+        document.getElementById("status");
+
+    const ownerField =
+        document.getElementById("owner");
+
+    const commentField =
+        document.getElementById("comment");
+
+    const clientError =
+        document.getElementById("activityClientError");
+
+
+    const initialStatus =
+        statusField.value;
+
+    const initialOwner =
+        ownerField.value;
+
+
+    activityForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const statusChanged =
+                statusField.value !== initialStatus;
+
+            const ownerChanged =
+                ownerField.value !== initialOwner;
+
+            const hasComment =
+                commentField.value.trim().length > 0;
+
+
+            if (
+                !statusChanged &&
+                !ownerChanged &&
+                !hasComment
+            ) {
+
+                event.preventDefault();
+
+                clientError.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            clientError.style.display =
+                "none";
+        }
+    );
+
+
+    function hideClientError() {
+        clientError.style.display = "none";
+    }
+
+
+    statusField.addEventListener(
+        "change",
+        hideClientError
+    );
+
+    ownerField.addEventListener(
+        "change",
+        hideClientError
+    );
+
+    commentField.addEventListener(
+        "input",
+        hideClientError
+    );
+
+</script>
+
+</body>
+</html>
