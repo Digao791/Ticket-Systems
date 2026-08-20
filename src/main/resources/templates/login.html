@@ -1,97 +1,106 @@
 <!DOCTYPE html>
-<html
-    lang="pt-BR"
-    xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <title>Login | Ticket System</title>
 
-    <title>Login - Ticket System</title>
-
-    <link
-        rel="stylesheet"
-        th:href="@{/css/login.css}">
-
+    <link rel="stylesheet"
+          th:href="@{/css/login.css}">
 </head>
 
 <body>
 
-<main class="login-page">
+<main class="login-container">
 
     <section class="login-card">
 
+        <!-- Logo / título -->
         <div class="login-header">
-
-            <p class="system-name">
-                Ticket System
-            </p>
-
-            <h1>Entrar</h1>
+            <h1>Ticket System</h1>
 
             <p>
-                Informe suas credenciais para acessar
-                o sistema.
+                Entre com sua conta para acessar seus projetos.
             </p>
+        </div>
+
+
+        <!-- Status do banco -->
+        <div id="databaseStatus"
+             class="database-status checking">
+
+            <span class="status-dot"></span>
+
+            <div class="status-content">
+
+                <strong id="databaseStatusTitle">
+                    Verificando sistema...
+                </strong>
+
+                <span id="databaseStatusMessage">
+                    Verificando conexão com o banco de dados.
+                </span>
+
+            </div>
 
         </div>
 
 
-        <div
-            class="alert alert-error"
-            th:if="${param.error}">
+        <!-- Login inválido -->
+        <div class="alert alert-error"
+             th:if="${param.error}">
 
             Email ou senha inválidos.
 
         </div>
 
 
-        <div
-            class="alert alert-success"
-            th:if="${param.logout}">
+        <!-- Logout -->
+        <div class="alert alert-success"
+             th:if="${param.logout}">
 
-            Você saiu do sistema.
+            Logout realizado com sucesso.
 
         </div>
 
 
-        <form
-            class="login-form"
-            th:action="@{/login}"
-            method="post">
+        <!-- Formulário -->
+        <form id="loginForm"
+              th:action="@{/login}"
+              method="post">
 
-            <div class="form-field">
+            <div class="form-group">
 
                 <label for="email">
                     Email
                 </label>
 
                 <input
+                    type="email"
                     id="email"
                     name="email"
-                    type="email"
-                    placeholder="usuario@email.com"
+                    placeholder="nome@empresa.com"
                     autocomplete="username"
                     required>
 
             </div>
 
 
-            <div class="form-field">
+            <div class="form-group">
 
                 <label for="password">
                     Senha
                 </label>
 
                 <input
+                    type="password"
                     id="password"
                     name="password"
-                    type="password"
-                    placeholder="Sua senha"
+                    placeholder="Digite sua senha"
                     autocomplete="current-password"
                     required>
 
@@ -99,8 +108,9 @@
 
 
             <button
-                class="login-button"
-                type="submit">
+                id="loginButton"
+                type="submit"
+                class="login-button">
 
                 Entrar
 
@@ -108,9 +118,187 @@
 
         </form>
 
+
+        <div class="login-footer">
+            <span>
+                Ticket Management System
+            </span>
+        </div>
+
     </section>
 
 </main>
+
+
+<script>
+
+    const statusBox =
+        document.getElementById("databaseStatus");
+
+    const statusTitle =
+        document.getElementById("databaseStatusTitle");
+
+    const statusMessage =
+        document.getElementById("databaseStatusMessage");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+
+    /*
+     * Estado: conectado
+     */
+    function setConnected() {
+
+        statusBox.className =
+            "database-status connected";
+
+        statusTitle.textContent =
+            "Sistema disponível";
+
+        statusMessage.textContent =
+            "Banco de dados conectado.";
+
+        emailInput.disabled = false;
+        passwordInput.disabled = false;
+        loginButton.disabled = false;
+
+    }
+
+
+    /*
+     * Estado: desconectado
+     */
+    function setDisconnected() {
+
+        statusBox.className =
+            "database-status disconnected";
+
+        statusTitle.textContent =
+            "Banco de dados indisponível";
+
+        statusMessage.textContent =
+            "A autenticação ficará disponível assim que a conexão for restabelecida.";
+
+        emailInput.disabled = true;
+        passwordInput.disabled = true;
+        loginButton.disabled = true;
+
+    }
+
+
+    /*
+     * Estado: verificando
+     */
+    function setChecking() {
+
+        statusBox.className =
+            "database-status checking";
+
+        statusTitle.textContent =
+            "Verificando sistema...";
+
+        statusMessage.textContent =
+            "Verificando conexão com o banco de dados.";
+
+        emailInput.disabled = true;
+        passwordInput.disabled = true;
+        loginButton.disabled = true;
+
+    }
+
+
+    /*
+     * Consulta o backend.
+     */
+    async function checkDatabase() {
+
+        try {
+
+            const response = await fetch(
+                "/api/database/status",
+                {
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+
+                setDisconnected();
+
+                return;
+            }
+
+
+            const status =
+                await response.json();
+
+
+            if (status === "CONNECTED") {
+
+                setConnected();
+
+            } else {
+
+                setDisconnected();
+
+            }
+
+        } catch (error) {
+
+            setDisconnected();
+
+        }
+
+    }
+
+
+    /*
+     * Impede submit caso o banco
+     * fique indisponível.
+     */
+    document
+        .getElementById("loginForm")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                if (loginButton.disabled) {
+                    event.preventDefault();
+                }
+
+            }
+        );
+
+
+    /*
+     * Estado inicial.
+     */
+    setChecking();
+
+
+    /*
+     * Primeira verificação.
+     */
+    checkDatabase();
+
+
+    /*
+     * Verificação periódica.
+     */
+    setInterval(
+        checkDatabase,
+        5000
+    );
+
+</script>
 
 </body>
 </html>

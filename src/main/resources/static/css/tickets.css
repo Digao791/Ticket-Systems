@@ -505,3 +505,51 @@ body {
     }
 
 }
+
+/* ========================================
+   ERROR PAGE
+   ======================================== */
+
+.error-panel {
+    max-width: 520px;
+
+    margin: 80px auto;
+
+    text-align: center;
+}
+
+.error-code {
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    color: #9ca3af;
+}
+
+.error-panel h1 {
+    margin-bottom: 12px;
+
+    font-size: 26px;
+
+    color: #111827;
+}
+
+.error-message {
+    margin-bottom: 26px;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    color: #6b7280;
+}
+
+.error-actions {
+    display: flex;
+
+    justify-content: center;
+
+    margin-top: 24px;
+}

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Banco indisponível | Ticket System</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/database-error.css}">
+
+</head>
+
+<body>
+
+<main class="error-container">
+
+    <section class="error-card">
+
+        <div class="status-icon">
+            !
+        </div>
+
+        <h1>
+            Banco de dados indisponível
+        </h1>
+
+        <p>
+            Não foi possível acessar o banco de dados
+            neste momento.
+        </p>
+
+        <p class="secondary-message">
+            A aplicação continua ativa e tentará
+            restabelecer a conexão automaticamente.
+        </p>
+
+        <div class="database-status">
+
+            <span id="statusDot"
+                  class="status-dot">
+            </span>
+
+            <span id="statusText">
+                Verificando conexão...
+            </span>
+
+        </div>
+
+        <button id="retryButton"
+                type="button"
+                class="retry-button">
+
+            Tentar novamente
+
+        </button>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    const statusDot =
+        document.getElementById("statusDot");
+
+    const statusText =
+        document.getElementById("statusText");
+
+    const retryButton =
+        document.getElementById("retryButton");
+
+
+    async function checkDatabase() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/database/status",
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                setDisconnected();
+
+                return false;
+            }
+
+
+            const status =
+                await response.json();
+
+
+            if (status === "CONNECTED") {
+
+                setConnected();
+
+                return true;
+            }
+
+
+        } catch (error) {
+            // continua como disconnected
+        }
+
+
+        setDisconnected();
+
+        return false;
+    }
+
+
+    function setConnected() {
+
+        statusDot.className =
+            "status-dot connected";
+
+        statusText.textContent =
+            "Banco conectado";
+
+    }
+
+
+    function setDisconnected() {
+
+        statusDot.className =
+            "status-dot disconnected";
+
+        statusText.textContent =
+            "Banco desconectado";
+
+    }
+
+
+    retryButton.addEventListener(
+        "click",
+        async function () {
+
+            retryButton.disabled = true;
+
+            retryButton.textContent =
+                "Verificando...";
+
+
+            const connected =
+                await checkDatabase();
+
+
+            if (connected) {
+
+                window.location.href = "/";
+
+                return;
+            }
+
+
+            retryButton.disabled = false;
+
+            retryButton.textContent =
+                "Tentar novamente";
+
+        }
+    );
+
+
+    checkDatabase();
+
+
+    setInterval(
+        async function () {
+
+            const connected =
+                await checkDatabase();
+
+
+            /*
+             * Opcional:
+             *
+             * se quiser voltar automaticamente
+             * quando o DB retornar:
+             */
+
+            if (connected) {
+
+                window.location.href = "/";
+            }
+
+        },
+        5000
+    );
+
+</script>
+
+</body>
+
+</html>
