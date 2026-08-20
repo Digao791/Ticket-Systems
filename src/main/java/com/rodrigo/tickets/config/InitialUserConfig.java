@@ -1,54 +1,35 @@
 package com.rodrigo.tickets.config;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import com.rodrigo.tickets.entity.User;
 import com.rodrigo.tickets.entity.UserRole;
 import com.rodrigo.tickets.repository.UserRepository;
 
-@Configuration
+import jakarta.transaction.Transactional;
+
+@Component
 public class InitialUserConfig {
-    
+
+    private static final String ADMIN_NAME = "Administrator";
+    private static final String ADMIN_EMAIL = "admin@tickets.local";
+    private static final String ADMIN_PASSWORD = "admin123";
+
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    InitialUserConfig(UserRepository userRepository) {
+    public InitialUserConfig(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Bean
-    CommandLineRunner createInitialAdmin(
-        UserRepository userRepository,
-        PasswordEncoder passwordEncoder
-    ){
-        return args -> {
-            String adminEmail = "admin@tickets.local";
-            if(userRepository.findByEmail(adminEmail).isEmpty()){
-                User admin = new User("Administrator", adminEmail, passwordEncoder.encode("admin123"), UserRole.ADMIN);
-                this.userRepository.save(admin);
-                System.out.println("Admin user created");
-            }
-
-            String name = "Rodrigo";
-            createUserIfNotExists(userRepository, passwordEncoder,
-                 name, name + "@tickets.local", passwordEncoder.encode(name+"123"), UserRole.ADMIN);
-
-            name = "Gabriel";
-            createUserIfNotExists(userRepository, passwordEncoder,
-                 name, name + "@tickets.local", passwordEncoder.encode(name+"123"), UserRole.AGENT);
-            
-            name = "Mariana";
-            createUserIfNotExists(userRepository, passwordEncoder,
-                 name, name + "@tickets.local", passwordEncoder.encode(name+"123"), UserRole.ADMIN);
-
-            name = "Dummy";
-            createUserIfNotExists(userRepository, passwordEncoder,
-                 name, name + "@tickets.local", passwordEncoder.encode(name+"123"), UserRole.AGENT);
-        };
+    @Transactional
+    public void initializeAdmin(){
+        createUserIfNotExists(userRepository, passwordEncoder, ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD, UserRole.ADMIN);
     }
-
+    
+   
     private void createUserIfNotExists(UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         String name,

@@ -23,6 +23,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers("/css/**",
                 "/images/**",
+                "/api/database/status",
+                "/database-error",
                 "/login"
             ).permitAll()
             .anyRequest()
