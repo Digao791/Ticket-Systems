@@ -4,6 +4,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.rodrigo.tickets.entity.User;
 import com.rodrigo.tickets.entity.UserRole;
@@ -31,4 +33,17 @@ public class HomeController {
         return "index";
     }
     
+    @GetMapping("/new")
+    public String createProject(Model model, Authentication authentication){
+        User currentUser = userService.findByEmail(authentication.getName());
+        model.addAttribute("currentUser",  currentUser);
+        return "new-project";
+    }
+
+    @PostMapping
+    public String saveProject(@RequestParam String name, 
+                                @RequestParam String description){
+        projectService.create(name, description);
+        return "redirect:/";
+    }
 }

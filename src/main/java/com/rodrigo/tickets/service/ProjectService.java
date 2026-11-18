@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +75,12 @@ public class ProjectService {
     public Project findById(Long id){
         return projectRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+    }
+
+    @Transactional 
+    public Project create(String name, String description){
+        Project project = new Project(name, description);
+        return projectRepository.saveAndFlush(project);
     }
 
     private ProjectCardView toCard(Project project, User user){

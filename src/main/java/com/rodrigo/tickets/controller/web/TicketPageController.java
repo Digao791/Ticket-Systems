@@ -48,7 +48,7 @@ public class TicketPageController {
 
     @GetMapping
     public String showTickets(@PathVariable Long projectId, Model model, Authentication authentication) {
-        model.addAttribute("tickets", ticketService.findAllForView());
+        model.addAttribute("tickets", ticketService.findByProject(projectId));
         model.addAttribute("project", projectService.findById(projectId));
         User currentUser = userService.findByEmail(authentication.getName());
         model.addAttribute("currentUser", currentUser);
