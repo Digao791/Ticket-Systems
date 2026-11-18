@@ -1,5 +1,6 @@
 package com.rodrigo.tickets.config;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,7 @@ public class InitialUserConfig {
             System.out.println(email + " already exists.");
             return;
         }
-        User user = new User(name, email, rawPassword, role);
+        User user = new User(name, email, passwordEncoder.encode(rawPassword), role);
         userRepository.save(user);
         System.out.println("User created: " + user.getEmail());
     }

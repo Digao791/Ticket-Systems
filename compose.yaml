@@ -2,21 +2,42 @@ services:
 
   database:
     image: postgres:18-alpine
-
     container_name: tickets-postgres
 
-    restart: unless-stopped
-
     environment:
-      POSTGRES_DB : ${POSTGRES_DB}
-      POSTGRES_USER : ${POSTGRES_USER}
-      POSTGRES_PASSWORD : ${POSTGRES_PASSWORD}
+      POSTGRES_DB : tickets
+      POSTGRES_USER : tickets
+      POSTGRES_PASSWORD : tickets
 
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickets -d tickets"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    image: ticket-system:latest
+    container_name: ticket-system
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/tickets
+      DB_USERNAME: tickets
+      DB_PASSWORD: tickets
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:

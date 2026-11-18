@@ -17,7 +17,6 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login(Model model) {
-
         model.addAttribute("databaseConnected", databaseStatusService.isConnected());
         return "login";
     }
