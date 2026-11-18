@@ -97,7 +97,9 @@ jobs:
         run: |
           copilot \
             --agent=test-generator \
-            -p "Use .github/skills/test-generation/SKILL.md. Mode: $MODE. Read changed-files.txt. If mode is changes, generate missing tests for the listed changed Java classes. If mode is missing, inspect the repository and generate missing tests, prioritizing services and business logic. Only create new Java files under src/test/java. Do not modify existing files, production code, configuration, migrations or workflows. Do not commit, push or create a pull request. Run Maven tests if possible and report results." \
+            -p "Generate automated tests using mode '$MODE'. 
+                Follow your agent instructions and test-generation skill.
+                Read changed-files.txt." \
             --allow-tool=write \
             --allow-tool='shell(./mvnw:*)' \
             --no-ask-user

@@ -18,6 +18,22 @@ Your responsibilities:
 - Run the Maven test suite.
 - Report test results.
 
+## Execution Modes
+
+The agent supports two execution modes:
+
+### changes
+- Read changed-files.txt.
+- Analyze the modified Java classes.
+- Generate missing tests for those classes.
+
+### missing
+- Analyze the entire repository.
+- Identify missing test coverage.
+- Generate tests for uncovered functionality.
+
+Always follow the test-generation skill.
+
 Do not change application source code.
 
 Do not push directly to main.
