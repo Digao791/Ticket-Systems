@@ -1,324 +1,651 @@
-# Tickets
+# Tickets — Ticket Management System
 
-Sistema web de gerenciamento de tickets desenvolvido com **Java, Spring
-Boot, Maven, PostgreSQL, Flyway, Thymeleaf e Docker**.
+A web-based ticket management system built with **Java, Spring Boot, Maven, PostgreSQL, Flyway, Thymeleaf, and Docker**.
 
-## Pré-requisitos
+The application provides a centralized environment for managing projects, tracking tickets, assigning responsibilities, and monitoring activities.
 
-Instale Java (na versão configurada no `pom.xml`), Maven, Git e Docker
-Desktop/Docker Engine.
+The project also integrates **GitHub Actions and GitHub Copilot** to support continuous integration and automated test generation.
 
-``` bash
-java --version
-mvn --version
+## Features
+
+### Authentication and User Management
+- User authentication using Spring Security.
+- Password encryption using BCrypt.
+- Protected routes and authenticated sessions.
+- User accounts with roles and activation status.
+- User identification and ownership tracking.
+
+### Ticket Management
+- Create, view, update, and manage tickets.
+- Assign tickets to registered users.
+- Associate tickets with projects.
+- Track ticket status and progress.
+- Manage ticket priority and relevant information.
+
+### Project Management
+- Create and manage projects.
+- Organize tickets by project.
+- Associate project information with authenticated users.
+
+### Comments and Activity Tracking
+- Add comments to tickets.
+- Maintain ticket activity records.
+- Track relevant changes and interactions.
+
+### Database Management
+- PostgreSQL for persistent data storage.
+- Spring Data JPA and Hibernate for database operations.
+- Flyway for version-controlled database migrations.
+- Persistent Docker volumes to preserve application data.
+
+### CI/CD and Automated Testing
+- GitHub Actions for continuous integration.
+- Maven for building and testing the application.
+- JUnit 5 and Spring Boot Test for automated testing.
+- GitHub Copilot agent for generating missing tests.
+- Custom agent instructions and reusable testing skills.
+- Automated Pull Request creation for generated tests.
+
+## Technology Stack
+
+| Category | Technology |
+|---|---|
+| Language | Java 21 |
+| Backend | Spring Boot |
+| Security | Spring Security |
+| Frontend | Thymeleaf, HTML, CSS |
+| Database | PostgreSQL 18 |
+| ORM | Spring Data JPA / Hibernate |
+| Database migrations | Flyway |
+| Build tool | Maven |
+| Containerization | Docker, Docker Compose |
+| CI/CD | GitHub Actions |
+| Testing | JUnit 5, Spring Boot Test |
+| AI automation | GitHub Copilot CLI |
+
+## Prerequisites
+
+To run the application, install:
+
+- Git
+- Docker Desktop or Docker Engine
+- Docker Compose
+
+Java and Maven are optional for local development because the application can be built and executed using Docker.
+
+Verify your installation:
+
+```bash
+git --version
 docker --version
 docker compose version
-git --version
 ```
 
-No Windows com Docker Desktop/WSL 2, a virtualização do processador deve
-estar habilitada.
+Make sure Docker is running before starting the application.
 
-## Clonar e iniciar
+## Getting Started
 
-``` bash
-git clone <URL_DO_REPOSITORIO>
+### 1. Clone the repository
+
+```bash
+git clone <REPOSITORY_URL>
 cd tickets
-docker compose up -d
-mvn clean package
-mvn spring-boot:run
 ```
 
-Depois acesse:
+### 2. Build and start the application
 
-``` text
+```bash
+docker compose up -d --build
+```
+
+Docker Compose will:
+
+1. Create and start the PostgreSQL container.
+2. Build the Spring Boot application image.
+3. Start the application container.
+4. Connect the application to PostgreSQL.
+5. Execute pending Flyway migrations during application startup.
+6. Initialize the application.
+
+### 3. Access the application
+
+Open:
+
+```text
 http://localhost:8080
 ```
 
-Usuários não autenticados devem ser redirecionados para o login.
+Unauthenticated users are redirected to the login page.
 
-## PostgreSQL com Docker
+## Docker Architecture
 
-O ambiente de desenvolvimento utiliza o PostgreSQL definido em
-`compose.yaml`.
+The application uses Docker Compose to orchestrate the backend and database services.
 
-``` bash
+```text
+                  Web Browser
+                      |
+                      | HTTP :8080
+                      |
+              +------------------+
+              |   Spring Boot    |
+              |   Ticket System  |
+              |                  |
+              |   Thymeleaf      |
+              |   Spring Security|
+              |   JPA / Flyway   |
+              +------------------+
+                      |
+                      | JDBC :5432
+                      |
+              +------------------+
+              |   PostgreSQL 18  |
+              |                  |
+              |   tickets DB     |
+              +------------------+
+                      |
+              +------------------+
+              |   Docker Volume  |
+              |   postgres_data  |
+              +------------------+
+```
+
+The Spring Boot application communicates with PostgreSQL through Docker's internal network using the database service name.
+
+The internal JDBC connection is:
+
+```text
+jdbc:postgresql://database:5432/tickets
+```
+
+The database hostname is `database`, not `localhost`, because both services run inside Docker.
+
+## Docker Commands
+
+### Start the application
+
+```bash
 docker compose up -d
-docker ps
 ```
 
-Atualmente, o PostgreSQL do container é exposto na porta **5433 do
-host**, evitando conflito com uma possível instalação local do
-PostgreSQL na porta padrão 5432.
+### Rebuild and start
 
-A conexão padrão esperada pela aplicação é:
+Use this command after modifying application code or dependencies:
 
-``` text
-jdbc:postgresql://localhost:5433/tickets_db
+```bash
+docker compose up -d --build
 ```
 
-Dentro do container, o PostgreSQL continua usando a porta `5432`.
+### Stop the application
 
-## Persistência do banco
-
-O banco utiliza um **named volume do Docker**, portanto os dados
-permanecem entre reinicializações.
-
-Uso normal:
-
-``` bash
+```bash
 docker compose down
-docker compose up -d
 ```
 
-Isso preserva os dados.
+### Restart services
 
-Para apagar deliberadamente todo o banco de desenvolvimento:
+```bash
+docker compose restart
+```
 
-``` bash
+### View running containers
+
+```bash
+docker compose ps
+```
+
+### View application logs
+
+```bash
+docker compose logs -f app
+```
+
+### View database logs
+
+```bash
+docker compose logs -f database
+```
+
+### Remove containers and database volumes
+
+**Warning:** This command permanently removes database data stored in the Compose-managed volumes.
+
+```bash
 docker compose down -v
-docker compose up -d
 ```
 
-> `-v` remove o volume e todos os dados armazenados nele. Não use no
-> fluxo diário.
+Only use it when intentionally resetting the development environment.
 
-## Flyway e migrations
+## Database Configuration
 
-As migrations estão em:
+The application uses PostgreSQL 18.
 
-``` text
+Database connection settings are configured through environment variables.
+
+Example `application.properties`:
+
+```properties
+spring.application.name=tickets
+
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/tickets}
+spring.datasource.username=${DB_USERNAME:tickets}
+spring.datasource.password=${DB_PASSWORD:tickets}
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+```
+
+When running with Docker Compose, environment variables override the local defaults.
+
+Example:
+
+```yaml
+environment:
+  DB_URL: jdbc:postgresql://database:5432/tickets
+  DB_USERNAME: tickets
+  DB_PASSWORD: tickets
+```
+
+The credentials shown above are development examples and must not be used as production secrets.
+
+## Database Migrations
+
+Flyway manages database schema changes.
+
+Migration files are located at:
+
+```text
 src/main/resources/db/migration/
 ```
 
-Na primeira execução contra um banco vazio, o Flyway executa as
-migrations em ordem. Depois, executa apenas migrations novas.
+The database currently includes migrations for:
 
-Após uma migration ter sido compartilhada/aplicada, **não edite o
-arquivo antigo**. Crie uma nova migration, por exemplo:
+- Initial ticket-related tables.
+- Ticket comments.
+- Ticket status.
+- Ticket activities.
+- User accounts.
+- Ticket ownership relationships.
+- Activity ownership relationships.
+- Projects.
 
-``` text
-V10__descricao_da_alteracao.sql
-V11__outra_alteracao.sql
+Flyway automatically applies pending migrations when the application starts.
+
+Example migration naming:
+
+```text
+V10__add_project_description.sql
+V11__add_ticket_priority.sql
 ```
 
-Isso evita erros de checksum e mantém os bancos dos desenvolvedores
-consistentes.
+Once a migration has been applied or shared, avoid modifying it. Create a new migration instead.
 
-## application.properties
+Hibernate uses:
 
-As configurações principais estão em:
-
-``` text
-src/main/resources/application.properties
-```
-
-Exemplo do ambiente atual:
-
-``` properties
-spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5433/tickets_db}
-spring.datasource.username=${DB_USERNAME:tickets}
-spring.datasource.password=${DB_PASSWORD:tickets_dev_password}
-
+```properties
 spring.jpa.hibernate.ddl-auto=validate
-spring.flyway.enabled=true
 ```
 
-Se `DB_URL`, `DB_USERNAME` ou `DB_PASSWORD` existirem no ambiente, elas
-sobrescrevem os valores padrão.
+This ensures that Hibernate validates the database schema rather than creating or modifying tables automatically.
 
-**Nunca versione credenciais reais de produção.**
+## Database Access
 
-## Build
+Access the PostgreSQL container:
 
-``` bash
-mvn clean package
+```bash
+docker exec -it tickets-postgres psql -U tickets -d tickets
 ```
 
-O artefato gerado fica em:
+Useful PostgreSQL commands:
 
-``` text
-target/
-```
-
-`target/` é gerado localmente e não deve ser versionado.
-
-## Fluxo da primeira execução
-
-``` text
-Docker inicia PostgreSQL
-        ↓
-Spring conecta ao banco
-        ↓
-Flyway encontra o banco vazio
-        ↓
-Migrations são executadas
-        ↓
-Hibernate valida o schema
-        ↓
-Dados iniciais de desenvolvimento são criados
-        ↓
-Aplicação inicia
-```
-
-Depois disso, o volume Docker preserva o estado do banco.
-
-No dia a dia, normalmente basta:
-
-``` bash
-git pull
-docker compose up -d
-mvn spring-boot:run
-```
-
-## Acessar diretamente o banco do container
-
-``` bash
-docker exec -it tickets-postgres psql -U tickets -d tickets_db
-```
-
-Dentro do `psql`:
-
-``` sql
+```sql
 \dt
+```
+
+List all database tables.
+
+```sql
 SELECT * FROM flyway_schema_history;
 ```
 
-Para sair:
+View applied Flyway migrations.
 
-``` text
+```sql
+SELECT id, name, email, role, enabled FROM users;
+```
+
+View registered users.
+
+Exit PostgreSQL:
+
+```text
 \q
 ```
 
-## Estrutura principal
+## Authentication and Security
 
-``` text
+The application uses Spring Security for authentication and authorization.
+
+User passwords are stored using BCrypt hashing.
+
+Protected routes require authentication, and authenticated user information is retrieved from the security context.
+
+The application supports user roles and account activation status.
+
+For production deployments:
+
+- Use strong passwords.
+- Store secrets in environment variables or a secrets manager.
+- Enable HTTPS.
+- Restrict database exposure.
+- Avoid committing credentials to the repository.
+
+## Automated Testing
+
+The project uses Maven and JUnit 5 for automated testing.
+
+Run the tests locally:
+
+```bash
+./mvnw test
+```
+
+On Windows:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Tests are located in:
+
+```text
+src/test/java/
+```
+
+The testing strategy includes unit tests for business logic and Spring Boot tests where framework integration is required.
+
+## AI-Powered Test Generation
+
+The repository includes a GitHub Copilot agent designed to generate automated tests.
+
+The agent analyzes Java classes, identifies missing test coverage, and generates tests according to project-specific rules.
+
+### Test Generation Modes
+
+| Mode | Description |
+|---|---|
+| `changes` | Generates tests for newly modified Java classes |
+| `missing` | Analyzes the repository and generates missing tests |
+
+The default mode is `changes`.
+
+### Automated Workflow
+
+```text
+Push to main
+      |
+      v
+GitHub Actions
+      |
+      v
+Identify modified Java classes
+      |
+      v
+GitHub Copilot Agent
+      |
+      v
+Generate JUnit tests
+      |
+      v
+Execute Maven tests
+      |
+      v
+Create automation branch
+      |
+      v
+Open Pull Request
+      |
+      v
+Review and merge into main
+```
+
+Generated tests are created on separate branches.
+
+The agent does not push directly to the main branch.
+
+### Agent and Skill Configuration
+
+The repository includes:
+
+```text
+.github/
+├── agents/
+│   └── test-generator.agent.md
+├── skills/
+│   └── test-generation/
+│       └── SKILL.md
+└── workflows/
+    ├── ci.yml
+    └── test-generator.yml
+```
+
+**Test Generator Agent**
+
+Responsible for:
+
+- Identifying changed Java classes.
+- Inspecting existing tests.
+- Generating missing tests.
+- Running the Maven test suite.
+- Reporting test results.
+
+**Test Generation Skill**
+
+Defines testing conventions:
+
+- JUnit 5 and Spring Boot Test.
+- Mockito when dependency isolation is required.
+- Positive and negative test scenarios.
+- No modifications to production code.
+- No modifications to database migrations.
+- Preservation of existing tests.
+
+### Running Test Generation Manually
+
+1. Open the repository on GitHub.
+2. Navigate to **Actions**.
+3. Select **AI Test Generator**.
+4. Click **Run workflow**.
+5. Choose `changes` or `missing`.
+6. Start the workflow.
+
+When new tests are generated and validation succeeds, the workflow creates a Pull Request.
+
+### Copilot Authentication
+
+The GitHub Actions workflow requires a repository secret:
+
+```text
+COPILOT_TOKEN
+```
+
+The token must support GitHub Copilot requests.
+
+Never commit authentication tokens to the repository.
+
+## Project Structure
+
+```text
 tickets/
+├── .github/
+│   ├── agents/
+│   │   └── test-generator.agent.md
+│   ├── skills/
+│   │   └── test-generation/
+│   │       └── SKILL.md
+│   └── workflows/
+│       ├── ci.yml
+│       └── test-generator.yml
+│
+├── .mvn/
+├── infra/
+│   └── Dockerfile
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/rodrigo/tickets/
+│   │   │       ├── controller/
+│   │   │       ├── dto/
+│   │   │       ├── entity/
+│   │   │       ├── repository/
+│   │   │       └── service/
+│   │   │
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── db/
+│   │       │   └── migration/
+│   │       ├── templates/
+│   │       └── static/
+│   │
+│   └── test/
+│       └── java/
+│
 ├── compose.yaml
 ├── pom.xml
-├── README.md
+├── mvnw
+├── mvnw.cmd
 ├── .gitignore
-└── src/
-    ├── main/
-    │   ├── java/
-    │   │   └── com/rodrigo/tickets/
-    │   │       ├── controller/
-    │   │       ├── dto/
-    │   │       ├── entity/
-    │   │       ├── repository/
-    │   │       └── service/
-    │   └── resources/
-    │       ├── application.properties
-    │       ├── db/migration/
-    │       ├── templates/
-    │       └── static/
-    └── test/
+└── README.md
 ```
 
--   `controller/`: requisições HTTP, navegação e endpoints.
--   `dto/`: transporte de dados entre camadas/formulários.
--   `entity/`: entidades persistidas pelo JPA/Hibernate.
--   `repository/`: acesso ao banco com Spring Data JPA.
--   `service/`: regras de negócio.
--   `db/migration/`: evolução versionada do banco pelo Flyway.
--   `templates/`: páginas Thymeleaf.
--   `static/`: CSS e demais recursos estáticos.
+### Main Components
 
-## Trabalho com Git
+| Directory | Responsibility |
+|---|---|
+| `controller/` | HTTP requests and web navigation |
+| `dto/` | Data transfer objects |
+| `entity/` | JPA entities |
+| `repository/` | Database access |
+| `service/` | Business logic |
+| `db/migration/` | Flyway migrations |
+| `templates/` | Thymeleaf views |
+| `static/` | CSS and static assets |
+| `src/test/` | Automated tests |
+| `.github/agents/` | Custom AI agents |
+| `.github/skills/` | Reusable AI instructions |
+| `.github/workflows/` | CI/CD automation |
+| `infra/` | Docker build configuration |
 
-Fluxo recomendado:
+## Development Workflow
 
-``` bash
+Create a feature branch:
+
+```bash
 git checkout main
-git pull
-git checkout -b feature/nome-da-feature
+git pull origin main
+git checkout -b feature/my-feature
 ```
 
-Depois da implementação:
+Implement your changes.
 
-``` bash
-mvn clean package
+Rebuild the application:
+
+```bash
+docker compose up -d --build
+```
+
+Commit and push:
+
+```bash
 git add .
-git commit -m "Descrição da alteração"
-git push -u origin feature/nome-da-feature
+git commit -m "feat: implement new feature"
+git push -u origin feature/my-feature
 ```
 
-Abra um Pull Request para a `main`. Depois que alterações forem
-integradas:
+Open a Pull Request targeting `main`.
 
-``` bash
+After merging:
+
+```bash
 git checkout main
-git pull
+git pull origin main
+docker compose up -d --build
 ```
 
-Migrations novas serão aplicadas automaticamente pelo Flyway na próxima
-inicialização.
+The CI workflow validates the application, while the AI test generator can create additional tests for newly integrated Java code.
 
-## .gitignore
+## Troubleshooting
 
-Recomendado:
+### Docker is not running
 
-``` gitignore
-target/
-.env
-.idea/
-*.iml
-.vscode/
-*.log
-logs/
-.DS_Store
-Thumbs.db
+Ensure Docker Desktop or Docker Engine is running.
+
+On Windows, verify that WSL 2 and hardware virtualization are enabled.
+
+### Port 8080 is already in use
+
+Check whether another application or container is using port 8080.
+
+### Database connection failed
+
+Check the container status:
+
+```bash
+docker compose ps
 ```
 
-O `compose.yaml` e `src/main/resources/db/migration/` **devem ser
-versionados**. O volume PostgreSQL é gerenciado pelo Docker e não fica
-no repositório.
+Review PostgreSQL logs:
 
-## Problemas comuns
-
-### Docker Engine Stopped
-
-No Windows, confira a virtualização na BIOS/UEFI e o funcionamento do
-WSL 2.
-
-### Porta 5432 ocupada
-
-Uma instalação local do PostgreSQL pode usar a porta 5432. Por isso, o
-PostgreSQL Docker deste projeto está exposto na porta 5433 do host.
-
-### Flyway checksum mismatch
-
-Uma migration já aplicada provavelmente foi alterada. Em um repositório
-compartilhado, mantenha migrations antigas imutáveis e crie uma nova
-versão.
-
-### Spring não conecta ao banco
-
-Confira:
-
-``` bash
-docker ps
+```bash
+docker compose logs database
 ```
 
-e verifique se `application.properties`, variáveis de ambiente e
-`compose.yaml` utilizam porta e credenciais compatíveis.
+Verify that the application uses the correct internal database hostname and credentials.
 
-## Desenvolvimento e produção
+### Flyway migration failed
 
-O `compose.yaml` atual atende principalmente ao desenvolvimento:
+Check the application logs:
 
-``` text
-Spring Boot → Maven/Java no host
-PostgreSQL  → Docker
+```bash
+docker compose logs app
 ```
 
-Posteriormente, a própria aplicação Spring Boot pode ser containerizada:
+Do not modify previously applied migrations. Create a new versioned migration for schema changes.
 
-``` text
-Docker Compose
-├── tickets-app
-└── PostgreSQL
-```
+### Authentication failed
 
-Configurações de produção --- credenciais, domínio, HTTPS, backups e
-volumes --- devem ser tratadas separadamente das configurações locais.
+Verify that the user exists and that the stored password uses BCrypt hashing.
+
+### Copilot authentication failed
+
+Verify that the `COPILOT_TOKEN` repository secret exists and that the token has the required Copilot Requests permission.
+
+### Generated tests fail
+
+Review the test-generation workflow logs and Maven test reports.
+
+Generated tests should be reviewed before merging.
+
+## Production Considerations
+
+The current Docker Compose configuration is intended primarily for development.
+
+Before deploying to production, consider:
+
+- HTTPS and reverse proxy configuration.
+- Secure environment variables.
+- Database backups.
+- Persistent storage.
+- Container health checks.
+- Resource limits.
+- Monitoring and application logging.
+- Secure user and role management.
+- CI/CD deployment controls.
+
+## License
+
+No license has been specified for this project.
